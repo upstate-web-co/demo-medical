@@ -1,0 +1,158 @@
+---
+/**
+ * Notification mockup — "phone reveal" for the Dental ad.
+ * Script: Dentist at a farmers market with her family on Saturday morning.
+ * Tagline: UWC: your practice grows while you rest.
+ */
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Notifications — Bramblewood Dental</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: '#3B82F6',
+            light: '#F8FAFC',
+            lightbg: '#F1F5F9',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-lightbg min-h-screen text-slate-800">
+  <!-- Status Bar Mockup -->
+  <div class="flex items-center justify-between px-6 py-2 text-xs text-slate-400">
+    <span>11:15 AM</span>
+    <div class="flex items-center gap-1"><span>5G</span><span>📶</span><span>🔋 89%</span></div>
+  </div>
+
+  <!-- App Header -->
+  <div class="px-6 pt-4 pb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-slate-400">Good morning</p>
+        <h1 class="text-2xl font-bold text-slate-800">Bramblewood Dental</h1>
+      </div>
+      <div class="relative">
+        <div class="w-10 h-10 rounded-full bg-medical/10 flex items-center justify-center text-lg">🦷</div>
+        <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white">7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="px-6 grid grid-cols-3 gap-3 mb-6">
+    <div class="bg-white border border-slate-200 rounded-xl p-3 text-center shadow-sm">
+      <p class="text-2xl font-bold text-medical">3</p>
+      <p class="text-[10px] text-slate-400 mt-1">Appointments</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl p-3 text-center shadow-sm">
+      <p class="text-2xl font-bold text-slate-400">$0</p>
+      <p class="text-[10px] text-slate-400 mt-1">Deposits</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl p-3 text-center shadow-sm">
+      <p class="text-2xl font-bold text-sky-500">2</p>
+      <p class="text-[10px] text-slate-400 mt-1">AI Chats</p>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="px-6">
+    <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">While you were away</h2>
+    <div class="space-y-3">
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-sm">🚨</div>
+            <div>
+              <p class="text-sm font-medium text-slate-800">Emergency appointment: Alex M. — chipped tooth</p>
+              <p class="text-xs text-slate-400">Monday 8am · marked urgent</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-300">10m ago</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-medical/10 flex items-center justify-center text-sm">🤖</div>
+            <div>
+              <p class="text-sm font-medium text-slate-800">AI triaged: patient described symptoms</p>
+              <p class="text-xs text-slate-400">Routed to Emergency Care · auto-booked earliest slot</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-300">10m ago</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-medical/10 flex items-center justify-center text-sm">📅</div>
+            <div>
+              <p class="text-sm font-medium text-slate-800">New patient: routine cleaning + exam</p>
+              <p class="text-xs text-slate-400">Next Wednesday 2pm · first visit</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-300">25m ago</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">💬</div>
+            <div>
+              <p class="text-sm font-medium text-slate-800">AI answered insurance question</p>
+              <p class="text-xs text-slate-400">"Do you accept my plan?" · confirmed Delta Dental</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-300">40m ago</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-medical/10 flex items-center justify-center text-sm">✨</div>
+            <div>
+              <p class="text-sm font-medium text-slate-800">Clear aligner consultation request — Sarah K.</p>
+              <p class="text-xs text-slate-400">Interested in Invisalign · requested callback</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-300">1h ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Summary -->
+  <div class="px-6 py-8 mt-4">
+    <div class="bg-medical/5 border border-medical/20 rounded-xl p-5 text-center">
+      <p class="text-medical text-sm font-medium">3 new patients booked.</p>
+      <p class="text-slate-500 text-xs mt-1">You were picking strawberries with your daughter.</p>
+      <p class="text-slate-400 text-[10px] mt-3">3 appointments · 2 AI conversations · 1 emergency triaged</p>
+    </div>
+  </div>
+
+  <!-- UWC Branding -->
+  <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-lightbg via-lightbg/80 to-transparent py-6 px-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-slate-800 text-lg font-bold">UWC</p>
+        <p class="text-medical text-sm">Your practice grows while you rest.</p>
+      </div>
+      <p class="text-slate-400 text-xs">upstate-web.com</p>
+    </div>
+  </div>
+</body>
+</html>
