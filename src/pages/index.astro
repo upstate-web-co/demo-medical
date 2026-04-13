@@ -38,11 +38,25 @@ import { SITE, PROVIDERS, SERVICES, INSURANCE_NOTE, HOURS } from '../lib/config'
       <h2 class="text-3xl font-bold text-center mb-2">Our Services</h2>
       <p class="text-center text-muted text-sm mb-10">Comprehensive dental care for the whole family.</p>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {SERVICES.map((s) => (
+        {SERVICES.map((s, i) => (
           <div class="rounded-xl border border-blue/10 bg-white p-5 hover:shadow-md transition-shadow">
             <div class="text-2xl mb-2">{s.icon}</div>
             <h3 class="font-semibold text-charcoal">{s.name}</h3>
             <p class="text-sm text-muted mt-2 leading-relaxed">{s.description}</p>
+            <button class="mt-3 text-xs text-blue hover:text-blue-dark transition-colors flex items-center gap-1 cursor-pointer" data-service-toggle={i}>
+              Learn more <span class="transition-transform" data-service-arrow={i}>&#9662;</span>
+            </button>
+            <div class="hidden mt-3 pt-3 border-t border-blue/10" data-service-detail={i}>
+              <p class="text-xs text-muted leading-relaxed">
+                {s.name === 'Cleanings & Exams' && 'We recommend cleanings every 6 months. Each visit includes digital X-rays, a thorough cleaning by our hygienist, and a comprehensive exam by the dentist. We take time to explain what we find and answer every question.'}
+                {s.name === 'Cosmetic Dentistry' && 'From professional whitening to porcelain veneers and dental bonding, we help you get the smile you have always wanted. Free cosmetic consultations available. We use the latest materials for natural-looking results.'}
+                {s.name === 'Clear Aligners' && 'Straighten your teeth without metal braces. Our clear aligner treatment is comfortable, removable, and virtually invisible. Free consultations with Dr. Rivera, our certified aligner provider. Average treatment time: 6-18 months.'}
+                {s.name === 'Crowns & Bridges' && 'We use same-day digital impressions for a comfortable experience. Our lab-crafted crowns and bridges are color-matched to your natural teeth. Most cases completed in two visits.'}
+                {s.name === 'Emergency Care' && 'Toothache? Broken tooth? Infection? Call us for same-day emergency appointments. We prioritize urgent cases and will get you out of pain fast. After-hours emergency line available for existing patients.'}
+                {s.name === 'Pediatric Dentistry' && 'We make dental visits fun for kids. Gentle cleanings, fluoride treatments, sealants, and early orthodontic screenings. Our team is trained to work with anxious or first-time young patients. Parents welcome in the treatment room.'}
+              </p>
+              <a href="#appointment" class="inline-block mt-2 text-xs font-medium text-blue hover:text-blue-dark transition-colors">Book for {s.name} &rarr;</a>
+            </div>
           </div>
         ))}
       </div>
@@ -87,6 +101,60 @@ import { SITE, PROVIDERS, SERVICES, INSURANCE_NOTE, HOURS } from '../lib/config'
       <div class="mt-8">
         <a href={`tel:${SITE.phone}`} class="rounded-lg bg-blue px-6 py-3 text-sm font-medium text-white hover:bg-blue-dark transition-colors">Call to Verify Coverage</a>
       </div>
+    </div>
+  </section>
+
+  <!-- Appointment Request -->
+  <section id="appointment" class="py-20 px-6 bg-clean">
+    <div class="mx-auto max-w-lg">
+      <h2 class="text-3xl font-bold text-center mb-2">Request an Appointment</h2>
+      <p class="text-center text-muted text-sm mb-8">Fill out the form and we'll confirm your appointment within one business day.</p>
+      <form id="appointment-form" class="space-y-4">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-1">Your Name</label>
+            <input type="text" name="name" required class="w-full rounded-lg border border-blue/20 px-4 py-2.5 text-sm bg-blue-light/10 focus:border-blue focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-1">Phone</label>
+            <input type="tel" name="phone" required class="w-full rounded-lg border border-blue/20 px-4 py-2.5 text-sm bg-blue-light/10 focus:border-blue focus:outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-1">Email</label>
+          <input type="email" name="email" required class="w-full rounded-lg border border-blue/20 px-4 py-2.5 text-sm bg-blue-light/10 focus:border-blue focus:outline-none" />
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-1">Preferred Date</label>
+            <input type="date" name="date" required class="w-full rounded-lg border border-blue/20 px-4 py-2.5 text-sm bg-blue-light/10 focus:border-blue focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-charcoal mb-1">Reason for Visit</label>
+            <select name="reason" required class="w-full rounded-lg border border-blue/20 px-4 py-2.5 text-sm bg-blue-light/10 focus:border-blue focus:outline-none">
+              <option value="">Select...</option>
+              <option value="cleaning">Cleaning & Exam</option>
+              <option value="cosmetic">Cosmetic Consultation</option>
+              <option value="emergency">Emergency</option>
+              <option value="aligners">Clear Aligners Consultation</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-charcoal mb-1">Are you a new or returning patient?</label>
+          <div class="flex gap-6 mt-1">
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input type="radio" name="patient_type" value="new" required class="accent-blue" /> New patient
+            </label>
+            <label class="flex items-center gap-2 text-sm text-charcoal cursor-pointer">
+              <input type="radio" name="patient_type" value="returning" class="accent-blue" /> Returning patient
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="w-full rounded-lg bg-blue px-6 py-3 font-medium text-white hover:bg-blue-dark transition-colors">Request Appointment</button>
+        <div id="appointment-status" class="hidden rounded-lg p-3 text-center text-sm"></div>
+      </form>
     </div>
   </section>
 
@@ -138,6 +206,26 @@ import { SITE, PROVIDERS, SERVICES, INSURANCE_NOTE, HOURS } from '../lib/config'
   </section>
 
   <script>
+    // Service expand/collapse
+    document.querySelectorAll('[data-service-toggle]').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = (el as HTMLElement).dataset.serviceToggle
+        const detail = document.querySelector(`[data-service-detail="${idx}"]`)
+        const arrow = document.querySelector(`[data-service-arrow="${idx}"]`)
+        if (detail) detail.classList.toggle('hidden')
+        if (arrow) arrow.classList.toggle('rotate-180')
+      })
+    })
+
+    // Appointment form
+    document.getElementById('appointment-form')?.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const status = document.getElementById('appointment-status')!
+      status.textContent = 'Thank you! We\'ll confirm your appointment within one business day. Check your email for details.'
+      status.className = 'rounded-lg bg-blue/10 border border-blue/20 p-3 text-center text-sm text-blue-dark'
+      ;(e.target as HTMLFormElement).querySelectorAll('input, select, button').forEach(el => (el as HTMLInputElement).disabled = true)
+    })
+
     // Multi-turn AI chat
     const chatInput = document.getElementById('chat-input') as HTMLInputElement
     const chatSend = document.getElementById('chat-send')!
