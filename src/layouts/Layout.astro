@@ -1,0 +1,73 @@
+---
+import '../styles/global.css'
+import { SITE } from '../lib/config'
+interface Props { title?: string; description?: string }
+const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentist in Greenville, SC. Cleanings, cosmetic, Invisalign, emergency care. Online booking available.` } = Astro.props
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+</head>
+<body class="bg-clean text-charcoal antialiased">
+  <nav class="sticky top-0 z-50 bg-white shadow-sm">
+    <div class="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
+      <a href="/" class="flex items-center gap-2">
+        <span class="text-2xl">🦷</span>
+        <span class="text-lg font-semibold"><span class="text-blue">Greenville</span> Family Dental</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#services" class="text-muted hover:text-blue transition-colors">Services</a>
+        <a href="#providers" class="text-muted hover:text-blue transition-colors">Our Team</a>
+        <a href="#insurance" class="text-muted hover:text-blue transition-colors">Insurance</a>
+        <a href="#contact" class="text-muted hover:text-blue transition-colors">Contact</a>
+        <a href={SITE.bookingUrl} class="rounded-lg bg-blue px-5 py-2 font-medium text-white hover:bg-blue-dark transition-colors">Book Online</a>
+      </div>
+    </div>
+  </nav>
+  <main><slot /></main>
+
+  <!-- Demo Disclaimer -->
+  <div class="bg-yellow-50 border-y border-yellow-200 py-3 px-6 text-center">
+    <p class="text-xs text-yellow-800">
+      <strong>Portfolio Demo</strong> — This is a sample site built by <a href="https://upstate-web.com" class="underline hover:text-yellow-900">Upstate Web Co</a> to showcase what we build for this industry. This is not a real business.
+    </p>
+  </div>
+
+  <footer class="bg-charcoal text-white/70">
+    <div class="mx-auto max-w-6xl px-6 py-10">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div>
+          <p class="text-lg font-semibold text-white">🦷 Greenville Family Dental</p>
+          <p class="text-sm mt-2">{SITE.tagline}</p>
+        </div>
+        <div class="text-sm">
+          <p class="font-medium text-white mb-2">Hours</p>
+          <p>Mon–Thu: 8am–5pm</p>
+          <p>Fri: 8am–2pm</p>
+          <p>Sat: By appointment</p>
+        </div>
+        <div class="text-sm">
+          <p class="font-medium text-white mb-2">Contact</p>
+          <p>{SITE.address}</p>
+          <p class="mt-1"><a href={`tel:${SITE.phone}`} class="hover:text-blue">{SITE.phone}</a></p>
+          <p><a href={`mailto:${SITE.email}`} class="hover:text-blue">{SITE.email}</a></p>
+        </div>
+        <div class="text-sm">
+          <p class="font-medium text-white mb-2">Quick Links</p>
+          <p><a href={SITE.bookingUrl} class="hover:text-blue">Book Appointment</a></p>
+          <p><a href="#new-patient" class="hover:text-blue">New Patient Forms</a></p>
+          <p><a href="#insurance" class="hover:text-blue">Insurance</a></p>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-white/10 text-center text-xs">
+        &copy; {new Date().getFullYear()} {SITE.name}. Built by <a href="https://upstate-web.com" class="text-blue hover:underline">Upstate Web Co</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

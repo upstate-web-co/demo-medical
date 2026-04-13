@@ -1,0 +1,160 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { SITE, PROVIDERS, SERVICES, INSURANCE, HOURS } from '../lib/config'
+---
+
+<Layout>
+  <!-- Hero -->
+  <section class="relative h-[60vh] flex items-center overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80" alt="Modern dental office" class="absolute inset-0 w-full h-full object-cover brightness-[0.35]" loading="eager" />
+    <div class="relative px-6 mx-auto max-w-6xl">
+      <div class="max-w-xl">
+        <h1 class="text-4xl md:text-5xl font-bold text-white leading-tight">Your smile deserves<br/><span class="text-sky">modern care.</span></h1>
+        <p class="mt-4 text-lg text-white/80">Family dentistry in downtown Greenville. Online booking. Same-day emergencies. Accepting new patients.</p>
+        <div class="mt-8 flex flex-col sm:flex-row gap-3">
+          <a href={SITE.bookingUrl} class="rounded-lg bg-blue px-6 py-3 text-center font-medium text-white hover:bg-blue-dark transition-colors">Book Online</a>
+          <a href={`tel:${SITE.phone}`} class="rounded-lg bg-white/10 border border-white/30 px-6 py-3 text-center font-medium text-white hover:bg-white/20 transition-colors">Call {SITE.phone}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Ask -->
+  <section class="bg-blue-light/30 py-6 px-6">
+    <div class="mx-auto max-w-xl">
+      <div class="flex gap-2">
+        <input id="ai-ask" type="text" placeholder="Do you accept Delta Dental? Do you see kids? What about emergencies?" class="flex-1 rounded-lg border border-blue/20 bg-white px-5 py-3 text-sm placeholder:text-muted focus:border-blue focus:outline-none" />
+        <button id="ai-send" class="rounded-lg bg-blue px-5 py-3 text-sm font-medium text-white hover:bg-blue-dark transition-colors">Ask</button>
+      </div>
+      <div id="ai-response" class="hidden mt-3 rounded-xl bg-white border border-blue/10 p-4 text-sm leading-relaxed"></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="py-20 px-6">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-3xl font-bold text-center mb-2">Our Services</h2>
+      <p class="text-center text-muted text-sm mb-10">Comprehensive dental care for the whole family.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {SERVICES.map((s) => (
+          <div class="rounded-xl border border-blue/10 bg-white p-5 hover:shadow-md transition-shadow">
+            <div class="text-2xl mb-2">{s.icon}</div>
+            <h3 class="font-semibold text-charcoal">{s.name}</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">{s.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Providers -->
+  <section id="providers" class="py-20 px-6 bg-white">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-3xl font-bold text-center mb-10">Meet Our Team</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {PROVIDERS.map((p) => (
+          <div class="text-center">
+            <img src={p.image} alt={p.name} class="w-32 h-32 rounded-full object-cover mx-auto mb-4" loading="lazy" />
+            <h3 class="font-semibold">{p.name}</h3>
+            <p class="text-sm text-blue">{p.role}</p>
+            <p class="text-xs text-muted mt-2 leading-relaxed">{p.bio}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- New Patient -->
+  <section id="new-patient" class="py-16 px-6 bg-blue text-center">
+    <div class="mx-auto max-w-lg">
+      <h2 class="text-2xl font-bold text-white mb-3">New Patient? Start Here.</h2>
+      <p class="text-white/80 text-sm mb-6">Complete your intake forms online before your visit. Save time. Skip the clipboard.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#" class="rounded-lg bg-white text-blue font-medium px-6 py-3 hover:bg-white/90 transition-colors">Fill Out Forms Online</a>
+        <a href={SITE.bookingUrl} class="rounded-lg border border-white/30 text-white font-medium px-6 py-3 hover:bg-white/10 transition-colors">Book Your First Visit</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insurance -->
+  <section id="insurance" class="py-20 px-6">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-3xl font-bold text-center mb-2">Insurance We Accept</h2>
+      <p class="text-center text-muted text-sm mb-10">Don't see yours? Call us — we work with most major providers.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {INSURANCE.map((ins) => (
+          <div class="rounded-lg border border-blue/10 bg-white px-4 py-3 text-center text-sm font-medium text-charcoal">
+            {ins}
+          </div>
+        ))}
+      </div>
+      <p class="text-center text-sm text-muted mt-6">No insurance? Ask about our in-house dental savings plan.</p>
+    </div>
+  </section>
+
+  <!-- Contact / Visit -->
+  <section id="contact" class="py-20 px-6 bg-white">
+    <div class="mx-auto max-w-4xl grid md:grid-cols-2 gap-10">
+      <div>
+        <h2 class="text-3xl font-bold mb-6">Visit Us</h2>
+        <div class="space-y-4 text-sm">
+          <div>
+            <p class="font-medium text-charcoal">Address</p>
+            <p class="text-muted">{SITE.address}</p>
+          </div>
+          <div>
+            <p class="font-medium text-charcoal">Phone</p>
+            <p class="text-muted"><a href={`tel:${SITE.phone}`} class="hover:text-blue">{SITE.phone}</a></p>
+          </div>
+          <div>
+            <p class="font-medium text-charcoal">Hours</p>
+            {Object.entries(HOURS).map(([day, hours]) => (
+              <p class="text-muted"><span class="text-charcoal">{day}:</span> {hours}</p>
+            ))}
+          </div>
+          <div>
+            <p class="font-medium text-charcoal">Emergency?</p>
+            <p class="text-muted">Call us for same-day emergency appointments. We prioritize toothaches, infections, and broken teeth.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-xl overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=600&q=80" alt="Dental office" class="w-full h-full object-cover" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  <section class="py-12 px-6 bg-clean text-center">
+    <blockquote class="mx-auto max-w-xl">
+      <p class="text-lg italic leading-relaxed">"I used to dread the dentist. Dr. Patel changed that completely. She explains everything, never rushes, and my kids actually ask to go back."</p>
+      <cite class="mt-4 block text-sm text-muted not-italic">— Amanda R., patient since 2022</cite>
+    </blockquote>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-12 px-6 bg-blue text-center">
+    <h2 class="text-2xl font-bold text-white">Ready for your best smile?</h2>
+    <p class="text-white/80 text-sm mt-2">Book online in 30 seconds. New patients welcome.</p>
+    <a href={SITE.bookingUrl} class="inline-block mt-6 rounded-lg bg-white text-blue font-medium px-8 py-3 hover:bg-white/90 transition-colors">Book Your Appointment</a>
+  </section>
+
+  <script>
+    const aiInput = document.getElementById('ai-ask') as HTMLInputElement
+    const aiSend = document.getElementById('ai-send')!
+    const aiResponse = document.getElementById('ai-response')!
+    async function askAI() {
+      const text = aiInput.value.trim()
+      if (!text) return
+      aiResponse.textContent = 'Checking...'
+      aiResponse.classList.remove('hidden')
+      try {
+        const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text }) })
+        const data = await res.json()
+        aiResponse.textContent = data.reply || 'Not sure — call us at (864) 555-9120!'
+      } catch { aiResponse.textContent = 'Something went wrong. Call us!' }
+    }
+    aiSend.addEventListener('click', askAI)
+    aiInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') askAI() })
+  </script>
+</Layout>
