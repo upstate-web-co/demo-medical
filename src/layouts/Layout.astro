@@ -2,7 +2,7 @@
 import '../styles/global.css'
 import { SITE } from '../lib/config'
 interface Props { title?: string; description?: string }
-const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentist in Greenville, SC. Cleanings, cosmetic, clear aligners, emergency care. Online booking available.` } = Astro.props
+const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentist in Greenville, SC. Cleanings, cosmetic, Invisalign, emergency care. Online booking available.` } = Astro.props
 ---
 <!doctype html>
 <html lang="en">
@@ -11,18 +11,14 @@ const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentis
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&q=80" />
   <link rel="preconnect" href="https://images.unsplash.com" />
 </head>
 <body class="bg-clean text-charcoal antialiased">
-  <nav class="sticky top-0 z-50 bg-white shadow-sm">
+  <nav id="main-nav" class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-500">
     <div class="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
       <a href="/" class="flex items-center gap-2">
         <span class="text-2xl">🦷</span>
-        <span class="text-lg font-semibold"><span class="text-blue">Bramblewood</span> Dental</span>
+        <span class="text-lg font-semibold"><span class="text-blue">Greenville</span> Family Dental</span>
       </a>
       <div class="hidden md:flex items-center gap-6 text-sm">
         <a href="#services" class="text-muted hover:text-blue transition-colors">Services</a>
@@ -31,29 +27,14 @@ const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentis
         <a href="#contact" class="text-muted hover:text-blue transition-colors">Contact</a>
         <a href={SITE.bookingUrl} class="rounded-lg bg-blue px-5 py-2 font-medium text-white hover:bg-blue-dark transition-colors">Book Online</a>
       </div>
-      <button id="mobile-menu-btn" class="md:hidden text-charcoal" aria-label="Open menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
     </div>
   </nav>
-
-  <!-- Mobile menu overlay -->
-  <div id="mobile-menu" class="hidden fixed inset-0 z-[60] flex-col items-center justify-center gap-6 bg-white text-charcoal">
-    <button id="mobile-menu-close" class="absolute top-4 right-6 text-charcoal" aria-label="Close menu">
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-    <a href="#services" class="text-xl text-muted hover:text-blue transition-colors">Services</a>
-    <a href="#providers" class="text-xl text-muted hover:text-blue transition-colors">Our Team</a>
-    <a href="#insurance" class="text-xl text-muted hover:text-blue transition-colors">Insurance</a>
-    <a href="#contact" class="text-xl text-muted hover:text-blue transition-colors">Contact</a>
-    <a href={SITE.bookingUrl} class="mt-2 rounded-lg bg-blue px-6 py-3 text-lg font-medium text-white hover:bg-blue-dark transition-colors">Book Online</a>
-  </div>
   <main><slot /></main>
 
   <!-- Demo Disclaimer -->
   <div class="bg-yellow-50 border-y border-yellow-200 py-3 px-6 text-center">
     <p class="text-xs text-yellow-800">
-      <strong>Portfolio Demo</strong> — This is a fictional business created by <a href="https://upstate-web.com" class="underline hover:text-yellow-900">Upstate Web Co</a>. All names, addresses, credentials, and details are entirely fictional. Not a real dental practice.
+      <strong>Portfolio Demo</strong> — This is a sample site built by <a href="https://upstate-web.com" class="underline hover:text-yellow-900">Upstate Web Co</a> to showcase what we build for this industry. This is not a real business.
     </p>
   </div>
 
@@ -61,7 +42,7 @@ const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentis
     <div class="mx-auto max-w-6xl px-6 py-10">
       <div class="grid md:grid-cols-4 gap-8">
         <div>
-          <p class="text-lg font-semibold text-white">🦷 Bramblewood Dental</p>
+          <p class="text-lg font-semibold text-white">🦷 Greenville Family Dental</p>
           <p class="text-sm mt-2">{SITE.tagline}</p>
         </div>
         <div class="text-sm">
@@ -89,12 +70,12 @@ const { title = `${SITE.name} — ${SITE.tagline}`, description = `Family dentis
     </div>
   </footer>
   <script>
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    const close = document.getElementById('mobile-menu-close');
-    btn?.addEventListener('click', () => menu?.classList.replace('hidden', 'flex'));
-    close?.addEventListener('click', () => menu?.classList.replace('flex', 'hidden'));
-    menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu?.classList.replace('flex', 'hidden')));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible') })
+    }, { threshold: 0.08, rootMargin: '-20px' })
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+    const nav = document.getElementById('main-nav')
+    if (nav) window.addEventListener('scroll', () => nav.classList.toggle('nav-scrolled', window.scrollY > 40), { passive: true })
   </script>
 </body>
 </html>
