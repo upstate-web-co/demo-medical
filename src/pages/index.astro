@@ -1,7 +1,13 @@
 ---
+<<<<<<< HEAD
 import { Image } from 'astro:assets'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { SITE, PROVIDERS, SERVICES, INSURANCE_NOTE, HOURS } from '../lib/config'
+=======
+import Layout from '../layouts/Layout.astro'
+import { SITE, PROVIDERS, SERVICES, INSURANCE, HOURS, WHAT_TO_EXPECT } from '../lib/config'
+---
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
 
 const title = `${SITE.name} — ${SITE.tagline}`
 const description = `Family dentist in Greenville, SC. Cleanings, cosmetic, clear aligners, emergency care. Online booking available.`
@@ -29,6 +35,7 @@ const organizationJsonLd = {
 
   <!-- Hero -->
   <section class="relative h-[60vh] flex items-center overflow-hidden">
+<<<<<<< HEAD
     <Image
       src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&q=75&auto=format"
       alt="Modern dental office interior with treatment chair"
@@ -38,6 +45,9 @@ const organizationJsonLd = {
       height={800}
       inferSize={false}
     />
+=======
+    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=80" alt="Modern dental office" class="absolute inset-0 w-full h-full object-cover brightness-[0.35]" loading="eager" />
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
     <div class="relative px-6 mx-auto max-w-6xl">
       <div class="max-w-xl">
         <h1 class="text-4xl md:text-5xl font-bold text-white leading-tight">Your smile deserves<br/><span class="text-sky">modern care.</span></h1>
@@ -50,6 +60,7 @@ const organizationJsonLd = {
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- AI Chat -->
   <section class="bg-blue-light/30 py-6 px-6" aria-label="AI assistant">
     <div class="mx-auto max-w-xl">
@@ -59,6 +70,28 @@ const organizationJsonLd = {
           <label for="chat-input" class="sr-only">Ask a question</label>
           <input id="chat-input" type="text" placeholder="Do you accept my insurance? Do you see kids? What about emergencies?" class="flex-1 rounded-lg border border-blue/20 bg-blue-light/20 px-5 py-2.5 text-sm placeholder:text-muted focus:border-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500" />
           <button id="chat-send" type="button" class="rounded-lg bg-blue px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Ask</button>
+=======
+  <!-- Inline AI Chat -->
+  <section class="bg-blue-light/30 py-8 px-6">
+    <div class="mx-auto max-w-xl">
+      <div class="flex items-center gap-3 mb-4">
+        <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=200&q=80" alt="Greenville Family Dental" class="w-12 h-12 rounded-full object-cover border-2 border-blue/20 shadow-sm" />
+        <div>
+          <p class="text-sm font-semibold text-charcoal">Ask Greenville Family Dental</p>
+          <p class="text-xs text-muted">Insurance, services, booking, emergencies</p>
+        </div>
+      </div>
+      <div class="rounded-xl border border-blue/15 bg-white overflow-hidden">
+        <div id="chat-messages" class="hidden max-h-80 overflow-y-auto px-4 pt-4 pb-2 space-y-3"></div>
+        <div id="chat-quick" class="flex gap-2 px-3 py-2.5 overflow-x-auto border-b border-blue/10">
+          <button class="chat-q shrink-0 rounded-full border border-blue/15 bg-blue/5 px-3 py-1.5 text-xs font-medium text-blue hover:bg-blue/10 transition-colors" data-msg="Do you accept Delta Dental?">Insurance</button>
+          <button class="chat-q shrink-0 rounded-full border border-blue/15 bg-blue/5 px-3 py-1.5 text-xs font-medium text-blue hover:bg-blue/10 transition-colors" data-msg="I have a dental emergency">Emergency</button>
+          <button class="chat-q shrink-0 rounded-full border border-blue/15 bg-blue/5 px-3 py-1.5 text-xs font-medium text-blue hover:bg-blue/10 transition-colors" data-msg="What are your hours?">Hours</button>
+        </div>
+        <div class="flex gap-2 p-3">
+          <input id="chat-input" type="text" placeholder="Ask about services, insurance, booking..." maxlength="500" autocomplete="off" class="flex-1 rounded-lg border border-blue/15 bg-clean px-5 py-2.5 text-sm text-charcoal placeholder:text-muted focus:border-blue focus:outline-none" />
+          <button id="chat-send" class="rounded-lg bg-blue px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-dark transition-colors">Ask</button>
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
         </div>
       </div>
     </div>
@@ -67,9 +100,10 @@ const organizationJsonLd = {
   <!-- Services -->
   <section id="services" class="py-20 px-6">
     <div class="mx-auto max-w-4xl">
-      <h2 class="text-3xl font-bold text-center mb-2">Our Services</h2>
+      <h2 class="reveal text-3xl font-bold text-center mb-2">Our Services</h2>
       <p class="text-center text-muted text-sm mb-10">Comprehensive dental care for the whole family.</p>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+<<<<<<< HEAD
         {SERVICES.map((s, i) => (
           <div class="rounded-xl border border-blue/10 bg-white p-5 hover:shadow-md transition-shadow">
             <div class="text-2xl mb-2" aria-hidden="true">{s.icon}</div>
@@ -89,6 +123,13 @@ const organizationJsonLd = {
               </p>
               <a href="/contact" class="inline-block mt-2 text-xs font-medium text-blue hover:text-blue-dark transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Book for {s.name} &rarr;</a>
             </div>
+=======
+        {SERVICES.map((s) => (
+          <div class="rounded-xl border border-blue/10 bg-white p-5 hover:shadow-md hover:-translate-y-1 hover:border-blue/25 transition-all duration-300">
+            <div class="text-2xl mb-2">{s.icon}</div>
+            <h3 class="font-semibold text-charcoal">{s.name}</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">{s.description}</p>
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
           </div>
         ))}
       </div>
@@ -98,10 +139,11 @@ const organizationJsonLd = {
   <!-- Providers -->
   <section id="providers" class="py-20 px-6 bg-white">
     <div class="mx-auto max-w-4xl">
-      <h2 class="text-3xl font-bold text-center mb-10">Meet Our Team</h2>
+      <h2 class="reveal text-3xl font-bold text-center mb-10">Meet Our Team</h2>
       <div class="grid md:grid-cols-3 gap-6">
         {PROVIDERS.map((p) => (
           <div class="text-center">
+<<<<<<< HEAD
             <Image
               src={p.image}
               alt={`Portrait of ${p.name}, ${p.role}`}
@@ -110,6 +152,9 @@ const organizationJsonLd = {
               width={128}
               height={128}
             />
+=======
+            <div class="w-32 h-32 rounded-full overflow-hidden mx-auto mb-4"><img src={p.image} alt={p.name} class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" loading="lazy" /></div>
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
             <h3 class="font-semibold">{p.name}</h3>
             <p class="text-sm text-blue">{p.role}</p>
             <p class="text-xs text-muted mt-2 leading-relaxed">{p.bio}</p>
@@ -131,6 +176,7 @@ const organizationJsonLd = {
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- Insurance -->
   <section id="insurance" class="py-20 px-6">
     <div class="mx-auto max-w-3xl text-center">
@@ -139,12 +185,59 @@ const organizationJsonLd = {
       <p class="text-sm text-muted">No insurance? Ask about our dental savings plan for uninsured patients.</p>
       <div class="mt-8">
         <a href={`tel:${SITE.phone}`} class="rounded-lg bg-blue px-6 py-3 text-sm font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Call to Verify Coverage</a>
+=======
+  <!-- What to Expect -->
+  <section class="py-20 px-6">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="reveal text-3xl font-bold text-center mb-10">What to Expect</h2>
+      <div class="grid md:grid-cols-3 gap-8 text-center">
+        {WHAT_TO_EXPECT.map((s) => (
+          <div class="reveal">
+            <div class="w-14 h-14 rounded-full bg-blue/10 text-blue flex items-center justify-center mx-auto mb-4 text-xl font-bold">{s.step}</div>
+            <h3 class="font-semibold text-charcoal">{s.title}</h3>
+            <p class="text-sm text-muted mt-2 leading-relaxed">{s.description}</p>
+          </div>
+        ))}
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
       </div>
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- Visit Us -->
   <section id="visit" class="py-20 px-6 bg-white">
+=======
+  <!-- Insurance -->
+  <section id="insurance" class="py-20 px-6 bg-white">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="reveal text-3xl font-bold text-center mb-2">Insurance We Accept</h2>
+      <p class="text-center text-muted text-sm mb-8">Don't see yours? <a href={`tel:${SITE.phone}`} class="text-blue font-medium hover:underline">Call us</a> — we work with most major providers.</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        {INSURANCE.map((ins) => (
+          <span class="rounded-full border border-blue/15 bg-blue/5 px-5 py-2.5 text-sm font-medium text-charcoal">{ins}</span>
+        ))}
+      </div>
+      <p class="text-center text-xs text-muted mt-6">No insurance? Ask about our in-house dental savings plan. We also accept CareCredit.</p>
+    </div>
+  </section>
+
+  <!-- Emergency -->
+  <section class="py-10 px-6">
+    <div class="mx-auto max-w-2xl">
+      <div class="reveal rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col sm:flex-row items-center gap-4">
+        <span class="text-3xl">🚨</span>
+        <div class="flex-1 text-center sm:text-left">
+          <h3 class="font-bold text-red-800">Dental Emergency?</h3>
+          <p class="text-sm text-red-700 mt-1">Same-day appointments for toothaches, broken teeth, and infections.</p>
+        </div>
+        <a href={`tel:${SITE.phone}`} class="shrink-0 rounded-lg bg-red-600 text-white px-5 py-2.5 font-medium hover:bg-red-700 transition-colors">{SITE.phone}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Visit -->
+  <section id="contact" class="py-20 px-6 bg-white">
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
     <div class="mx-auto max-w-4xl grid md:grid-cols-2 gap-10">
       <div>
         <h2 class="text-3xl font-bold mb-6">Visit Us</h2>
@@ -198,6 +291,7 @@ const organizationJsonLd = {
   </section>
 
   <script>
+<<<<<<< HEAD
     document.querySelectorAll('[data-service-toggle]').forEach((el) => {
       el.addEventListener('click', () => {
         const idx = (el as HTMLElement).dataset.serviceToggle
@@ -210,70 +304,46 @@ const organizationJsonLd = {
       })
     })
 
+=======
+>>>>>>> c57335c (Enhancements: multi-turn chat, scroll reveals, hover lifts, creative sections)
     const chatInput = document.getElementById('chat-input') as HTMLInputElement
     const chatSend = document.getElementById('chat-send')!
     const chatMessages = document.getElementById('chat-messages')!
-    let chatHistory: Array<{ role: string; content: string }> = []
+    const chatQuick = document.getElementById('chat-quick')!
+    const chatHistory: Array<{ role: string; content: string }> = []
     let chatBusy = false
-
-    function addMessage(role: string, text: string) {
+    function escapeHtml(t: string): string { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br />') }
+    function linkify(h: string): string {
+      h = h.replace(/\(864\)\s*555-9120/g, '<a href="tel:+18645559120" class="text-blue underline">(864) 555-9120</a>')
+      h = h.replace(/hello@greenvillefamilydental\.com/g, '<a href="mailto:hello@greenvillefamilydental.com" class="text-blue underline">hello@greenvillefamilydental.com</a>')
+      return h
+    }
+    function addMsg(role: string, text: string) {
       chatMessages.classList.remove('hidden')
-      const wrapper = document.createElement('div')
-      wrapper.className = role === 'user' ? 'flex justify-end' : 'flex justify-start'
+      const el = document.createElement('div'); el.className = role === 'user' ? 'flex justify-end' : 'flex justify-start'
       const bubble = document.createElement('div')
-      bubble.className = role === 'user'
-        ? 'bg-blue text-white rounded-2xl rounded-br-sm px-4 py-2 max-w-[80%] text-sm'
-        : 'bg-blue-light/20 rounded-2xl rounded-bl-sm px-4 py-2 max-w-[80%] text-sm leading-relaxed'
-      if (role === 'assistant') {
-        let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        html = html.replace(/\((\d{3})\)\s*(\d{3})-(\d{4})/g, '<a href="tel:$1$2$3" class="underline">($1) $2-$3</a>')
-        html = html.replace(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, '<a href="mailto:$1" class="underline">$1</a>')
-        bubble.innerHTML = html
-      } else {
-        bubble.textContent = text
-      }
-      wrapper.appendChild(bubble)
-      chatMessages.appendChild(wrapper)
-      chatMessages.scrollTop = chatMessages.scrollHeight
+      bubble.className = role === 'user' ? 'bg-blue/8 text-charcoal rounded-xl rounded-tr-sm px-4 py-2.5 max-w-[80%] text-sm leading-relaxed' : 'bg-clean text-charcoal rounded-xl rounded-tl-sm px-4 py-2.5 max-w-[80%] text-sm leading-relaxed border border-blue/8'
+      bubble.innerHTML = role === 'user' ? escapeHtml(text) : linkify(escapeHtml(text))
+      el.appendChild(bubble); chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight
     }
-
     function showTyping() {
-      const el = document.createElement('div')
-      el.id = 'typing-indicator'
-      el.className = 'flex justify-start'
-      el.innerHTML = '<div class="bg-blue-light/20 text-muted rounded-2xl rounded-bl-sm px-4 py-2 text-sm">Checking...</div>'
-      chatMessages.appendChild(el)
-      chatMessages.scrollTop = chatMessages.scrollHeight
+      const el = document.createElement('div'); el.id = 'typing-indicator'; el.className = 'flex justify-start'
+      el.innerHTML = '<div class="bg-clean border border-blue/8 rounded-xl rounded-tl-sm px-4 py-2.5"><div class="flex gap-1.5 items-center h-5"><span class="w-1.5 h-1.5 rounded-full bg-blue/30 animate-bounce"></span><span class="w-1.5 h-1.5 rounded-full bg-blue/30 animate-bounce" style="animation-delay:.15s"></span><span class="w-1.5 h-1.5 rounded-full bg-blue/30 animate-bounce" style="animation-delay:.3s"></span></div></div>'
+      chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight
     }
-
-    async function sendMessage() {
-      const text = chatInput.value.trim()
-      if (!text || chatBusy) return
-      chatBusy = true
-      chatInput.value = ''
-      addMessage('user', text)
-      showTyping()
+    async function sendChat(text: string) {
+      if (!text || chatBusy) return; chatBusy = true; chatInput.value = ''; addMsg('user', text); showTyping()
       try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history: chatHistory }),
-        })
-        const data = await res.json()
+        const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, history: chatHistory }) })
         document.getElementById('typing-indicator')?.remove()
-        const reply = data.reply || "Not sure — call us at (864) 555-9120!"
-        addMessage('assistant', reply)
-        chatHistory.push({ role: 'user', content: text })
-        chatHistory.push({ role: 'assistant', content: reply })
-        if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20)
-      } catch {
-        document.getElementById('typing-indicator')?.remove()
-        addMessage('assistant', 'Something went wrong. Call us!')
-      }
-      chatBusy = false
+        const data = await res.json(); const reply = data.reply || 'Not sure — call us at (864) 555-9120!'
+        addMsg('assistant', reply); chatHistory.push({ role: 'user', content: text }); chatHistory.push({ role: 'assistant', content: reply })
+        if (chatHistory.length > 20) chatHistory.splice(0, chatHistory.length - 20)
+      } catch { document.getElementById('typing-indicator')?.remove(); addMsg('assistant', 'Something went wrong. Call us at (864) 555-9120!') }
+      chatBusy = false; chatInput.focus()
     }
-
-    chatSend.addEventListener('click', sendMessage)
-    chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage() })
+    chatSend.addEventListener('click', () => sendChat(chatInput.value.trim()))
+    chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(chatInput.value.trim()) })
+    document.querySelectorAll('.chat-q').forEach(btn => { btn.addEventListener('click', () => { sendChat((btn as HTMLElement).dataset.msg!); chatQuick.remove() }) })
   </script>
 </BaseLayout>
