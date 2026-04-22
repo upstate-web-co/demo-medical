@@ -1,0 +1,115 @@
+---
+import { SITE } from '../lib/config'
+
+const pathname = Astro.url.pathname
+const isActive = (href: string) => {
+  if (href === '/') return pathname === '/' || pathname === ''
+  return pathname === href || pathname === `${href}/`
+}
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+]
+---
+<nav class="sticky top-0 z-50 bg-white shadow-sm" aria-label="Primary">
+  <div class="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
+    <a
+      href="/"
+      class="flex items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      aria-label={`${SITE.name} home`}
+    >
+      <span aria-hidden="true" class="text-2xl">🦷</span>
+      <span class="text-lg font-semibold"><span class="text-blue">Bramblewood</span> Dental</span>
+    </a>
+    <ul class="hidden md:flex items-center gap-6 text-sm" role="list">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            aria-current={isActive(l.href) ? 'page' : undefined}
+            class:list={[
+              'rounded-md px-1 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500',
+              isActive(l.href) ? 'text-blue font-medium' : 'text-muted hover:text-blue',
+            ]}
+          >
+            {l.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <a
+          href={SITE.bookingUrl}
+          class="rounded-lg bg-blue px-5 py-2 font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        >
+          Book Online
+        </a>
+      </li>
+    </ul>
+    <button
+      id="mobile-menu-btn"
+      type="button"
+      class="md:hidden text-charcoal rounded-md p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div
+  id="mobile-menu"
+  class="hidden fixed inset-0 z-[60] flex-col items-center justify-center gap-6 bg-white text-charcoal"
+>
+  <button
+    id="mobile-menu-close"
+    type="button"
+    class="absolute top-4 right-6 text-charcoal rounded-md p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+    aria-label="Close menu"
+  >
+    <svg class="w-7 h-7" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+  {links.map((l) => (
+    <a
+      href={l.href}
+      aria-current={isActive(l.href) ? 'page' : undefined}
+      class:list={[
+        'text-xl rounded-md px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500',
+        isActive(l.href) ? 'text-blue font-medium' : 'text-muted hover:text-blue',
+      ]}
+    >
+      {l.label}
+    </a>
+  ))}
+  <a
+    href={SITE.bookingUrl}
+    class="mt-2 rounded-lg bg-blue px-6 py-3 text-lg font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+  >
+    Book Online
+  </a>
+</div>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn')
+  const menu = document.getElementById('mobile-menu')
+  const close = document.getElementById('mobile-menu-close')
+
+  function openMenu() {
+    menu?.classList.replace('hidden', 'flex')
+    btn?.setAttribute('aria-expanded', 'true')
+  }
+  function closeMenu() {
+    menu?.classList.replace('flex', 'hidden')
+    btn?.setAttribute('aria-expanded', 'false')
+  }
+
+  btn?.addEventListener('click', openMenu)
+  close?.addEventListener('click', closeMenu)
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu))
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') closeMenu()
+  })
+</script>
