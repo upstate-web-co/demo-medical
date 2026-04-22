@@ -89,5 +89,5 @@ jobs:
           Phase: ${{ inputs.phase }}
 
           Review the diff, merge to advance the pipeline." \
-            --base main \
+            --base "${{ github.event.repository.default_branch }}" \
             --head "$BRANCH"
