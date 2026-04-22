@@ -1,0 +1,112 @@
+{
+  "phase": "build",
+  "project": {
+    "name": "UWC Smoketest",
+    "track": "Q",
+    "cluster": "B",
+    "repo": "upstate-web-co/demo-medical",
+    "style": "Minimalist dental-practice",
+    "primaryColor": "#2563EB",
+    "primaryColorNote": "Design-phase handoff produced blue (#2563EB / Tailwind blue-600) rather than the briefed indigo (#4f46e5). Primary left as-is to preserve design-phase intent; focus rings use indigo-500 per a11y spec."
+  },
+  "pages": [
+    { "route": "/", "file": "src/pages/index.astro", "jsonLd": "Organization" },
+    { "route": "/about", "file": "src/pages/about.astro", "jsonLd": "Person" },
+    { "route": "/contact", "file": "src/pages/contact.astro", "jsonLd": "ContactPage" }
+  ],
+  "layout": {
+    "base": "src/layouts/BaseLayout.astro",
+    "nav": "src/components/NavBar.astro",
+    "deletedLegacy": "src/layouts/Layout.astro"
+  },
+  "contactForm": {
+    "route": "/api/contact",
+    "file": "src/pages/api/contact.ts",
+    "validator": "zod",
+    "mailer": "resend",
+    "envAccess": "context.locals.runtime.env (LSN-001)",
+    "replyTo": "submitter email",
+    "fromAddress": "onboarding@resend.dev (placeholder — swap for verified sender at launch)",
+    "honeypot": { "field": "website", "method": "visually hidden via CSS offscreen positioning", "onFilled": "return 200 silently" },
+    "responses": { "success": 201, "validationError": 400 },
+    "sendPattern": "sendEmailSafely (fire-and-forget, catches errors, never crashes route)",
+    "csrf": "Astro security.checkOrigin default; same-origin fetch sends Origin automatically (LSN-002 covered)"
+  },
+  "seo": {
+    "metaTags": ["title", "description", "canonical", "og:title", "og:description", "og:url", "og:type", "og:image", "twitter:card", "twitter:title", "twitter:description"],
+    "robotsMeta": "noindex, nofollow (demo mode)",
+    "sitemap": "@astrojs/sitemap generates dist/sitemap-index.xml + dist/sitemap-0.xml at build",
+    "site": "https://demo-medical.pages.dev (placeholder — swap at launch)"
+  },
+  "accessibility": {
+    "skipLink": "first element in <body>, sr-only until focus, targets #main-content",
+    "mainLandmark": "<main id=\"main-content\"> in BaseLayout",
+    "navAriaCurrent": true,
+    "hamburgerAriaExpanded": true,
+    "hamburgerAriaControls": "mobile-menu",
+    "focusVisibleRing": "focus-visible:ring-2 focus-visible:ring-indigo-500 on all interactive elements",
+    "images": "all <img> replaced with <Image> from astro:assets; meaningful alt text; width/height set for CLS",
+    "contrast": "primary blue on white passes WCAG AA for normal text; no secondary/accent added"
+  },
+  "flags": {
+    "indexable": false,
+    "isDemo": true,
+    "hasDisclaimer": true,
+    "launchMode": "unset"
+  },
+  "robotsTxt": {
+    "content": "User-agent: *\nDisallow: /",
+    "sitemapDirective": "intentionally omitted — add at launch when indexable flips true"
+  },
+  "envVars": {
+    "wranglerToml": ["CONTACT_EMAIL (placeholder)"],
+    "secretsToSetAtLaunch": [
+      "npx wrangler pages secret put RESEND_API_KEY",
+      "npx wrangler pages secret put CONTACT_EMAIL"
+    ],
+    "existingSecrets": ["ANTHROPIC_API_KEY (used by /api/chat)"]
+  },
+  "dependenciesAdded": ["zod", "resend", "@astrojs/sitemap"],
+  "buildVerification": {
+    "command": "npx astro build",
+    "result": "success",
+    "output": "dist/ — _worker.js, robots.txt, sitemap-index.xml, sitemap-0.xml, _astro/ assets"
+  },
+  "deviationsFromBrief": [
+    {
+      "item": "Primary color",
+      "briefSaid": "#4f46e5 (indigo)",
+      "builtAs": "#2563EB (blue)",
+      "reason": "Design-phase output used blue across entire site; repainting the design was out of build-phase scope. Focus rings use indigo-500 per a11y spec."
+    },
+    {
+      "item": "Project style",
+      "briefSaid": "Minimalist medical-practice style",
+      "builtAs": "Dental-practice (Bramblewood Dental)",
+      "reason": "Design-phase output was a dental practice. Build phase preserved vertical."
+    },
+    {
+      "item": "Design-phase handoff files",
+      "briefSaid": "reference BaseLayout.astro / NavBar.astro / about.astro / contact.astro",
+      "builtAs": "Only index.astro + Layout.astro existed at start of build phase; BaseLayout, NavBar, about, and contact were created during build.",
+      "reason": "Design phase did not produce these files; build phase created them to match the briefed 3-page structure."
+    }
+  ],
+  "knownIssues": [
+    "Cloudflare adapter uses passthrough image service (no runtime image optimization). Remote Unsplash images are served as-is with explicit dimensions for CLS. Consider `imageService: \"compile\"` if any image becomes prerendered.",
+    "notifications.astro (pre-existing) bypasses BaseLayout and loads Tailwind from CDN — left untouched; it's a standalone mockup.",
+    "Resend `from` uses onboarding@resend.dev — valid only for Resend test mode. Swap to a verified sender domain at launch."
+  ],
+  "nextPhase": {
+    "name": "launch",
+    "ownedBy": "skill-phase-prompt-governance",
+    "atomicFlags": ["launchMode"],
+    "todo": [
+      "Flip flags.indexable to true",
+      "Swap robots.txt to allow + add Sitemap directive",
+      "Swap site URL in astro.config.mjs to production domain",
+      "Verify Resend sender domain",
+      "Set launchMode atomically"
+    ]
+  }
+}

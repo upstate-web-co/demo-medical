@@ -1,0 +1,98 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { SITE, PROVIDERS } from '../lib/config'
+
+const title = `About ${SITE.name} — Our Team & Practice`
+const description = `Meet the team behind ${SITE.name}. Experienced, gentle family dentistry in Greenville, SC, focused on comfort, clarity, and long-term oral health.`
+
+const owner = PROVIDERS[0]
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: owner.name,
+  jobTitle: owner.role,
+  description: owner.bio,
+  worksFor: {
+    '@type': 'Organization',
+    name: SITE.name,
+    url: SITE.url,
+  },
+}
+---
+<BaseLayout title={title} description={description} ogType="profile">
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(personJsonLd)} />
+
+  <section class="py-16 px-6 bg-white">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-sm font-medium text-blue uppercase tracking-wider">About us</p>
+      <h1 class="mt-2 text-4xl md:text-5xl font-bold leading-tight">Modern dentistry, personal care.</h1>
+      <p class="mt-4 text-lg text-muted">
+        {SITE.name} has been serving Greenville families since 2015. Our small,
+        independent practice is built on a simple belief: good dentistry is slow,
+        gentle, and explained.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 px-6 bg-clean">
+    <div class="mx-auto max-w-4xl grid md:grid-cols-2 gap-10 items-center">
+      <div class="rounded-xl overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80"
+          alt="Bramblewood Dental treatment room with natural light"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          width={800}
+          height={600}
+        />
+      </div>
+      <div class="space-y-4 text-sm leading-relaxed text-charcoal">
+        <h2 class="text-2xl font-bold">Our philosophy</h2>
+        <p>
+          Most of our patients tell us they used to avoid the dentist. We changed that.
+          We take the time to explain what we see, show you the X-rays, and walk you
+          through your options — never rushing, never pressuring.
+        </p>
+        <p>
+          Every treatment plan is individual. No up-sells. No surprise bills. Just honest
+          recommendations from providers who have been doing this for over a decade.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 px-6 bg-white">
+    <div class="mx-auto max-w-4xl">
+      <h2 class="text-3xl font-bold text-center mb-10">Meet our team</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        {PROVIDERS.map((p) => (
+          <div class="text-center">
+            <Image
+              src={p.image}
+              alt={`Portrait of ${p.name}, ${p.role}`}
+              class="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+              loading="lazy"
+              width={128}
+              height={128}
+            />
+            <h3 class="font-semibold">{p.name}</h3>
+            <p class="text-sm text-blue">{p.role}</p>
+            <p class="text-xs text-muted mt-2 leading-relaxed">{p.bio}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 px-6 bg-blue text-center">
+    <div class="mx-auto max-w-lg">
+      <h2 class="text-2xl font-bold text-white mb-3">Ready to experience the difference?</h2>
+      <p class="text-white/80 text-sm mb-6">New patients welcome. Book your first visit today.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/contact" class="rounded-lg bg-white text-blue font-medium px-6 py-3 hover:bg-white/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Contact Us</a>
+        <a href={SITE.bookingUrl} class="rounded-lg border border-white/30 text-white font-medium px-6 py-3 hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Book Online</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
