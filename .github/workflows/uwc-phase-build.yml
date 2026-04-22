@@ -64,12 +64,17 @@ jobs:
           UWC_PHASE: ${{ inputs.phase }}
 
       - name: Commit + push branch (if Claude produced changes)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ -z "$(git status --porcelain)" ]]; then
             echo "no_changes=true" >> $GITHUB_OUTPUT
             echo "Claude produced no file changes — skipping PR"
             exit 0
           fi
+          # claude-code-action's OIDC step may clear the checkout-persisted
+          # credentials, so re-auth the origin remote with the job's token.
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
           git add -A
           git commit -m "UWC phase build — ${{ inputs.phase }} (job ${{ inputs.job_id }})"
           git push origin "$BRANCH"
