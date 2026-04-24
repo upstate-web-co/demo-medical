@@ -45,7 +45,11 @@ jobs:
 
       - name: Create feature branch
         run: |
-          BRANCH="uwc-phase-${{ inputs.phase }}-${{ inputs.job_id }}"
+          # Slug-safe phase: replace anything that's not [a-zA-Z0-9._-] with '-',
+          # collapse runs of '-'. Defense against phase labels that slipped through
+          # with spaces or punctuation (git branch refs reject most of these).
+          PHASE_SAFE="$(printf '%s' "${{ inputs.phase }}" | tr -c 'a-zA-Z0-9._-' '-' | tr -s '-' | sed 's/^-//; s/-$//')"
+          BRANCH="uwc-phase-${PHASE_SAFE}-${{ inputs.job_id }}"
           git config user.name "uwc-claude-code[bot]"
           git config user.email "uwc-claude-code@users.noreply.github.com"
           git checkout -b "$BRANCH"
