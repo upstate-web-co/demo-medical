@@ -37,9 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      # SHA-pinned per 2026-04-27 security audit. Resolve new SHAs via:
+      #   gh api repos/actions/checkout/commits/v4 --jq .sha
+      #   gh api repos/actions/setup-node/commits/v4 --jq .sha
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # was @v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # was @v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -51,7 +54,11 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        # SHA-pinned per 2026-04-27 security audit. wrangler-action runs with
+        # CLOUDFLARE_API_TOKEN — a compromise of @v3 would let an attacker
+        # deploy arbitrary content to every UWC CF Pages project. Resolve via:
+        #   gh api repos/cloudflare/wrangler-action/commits/v3 --jq .sha
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd  # was @v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
