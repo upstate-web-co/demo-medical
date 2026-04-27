@@ -27,6 +27,14 @@ on:
       job_id:
         required: true
         description: phase_build_jobs.id — echoed in PR body for webhook correlation
+      claude_args:
+        required: false
+        description: |
+          Optional. Per-milestone routing string passed to anthropics/claude-code-action
+          (e.g. "--max-turns 60 --model claude-opus-4-7 --dangerously-skip-permissions").
+          Admin computes this via src/lib/milestone-routing.ts. When empty, falls back to
+          the prior global default below. Track B2 (2026-04-26).
+        default: ''
 
 permissions:
   contents: write
@@ -36,7 +44,13 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 60-minute wall-clock ceiling. Was 30 min until 2026-04-26 when Evandos
+    # M7 production_readiness hit it (Sonnet was working at ~2-3s/turn × 100+
+    # turns = >30 min). Workflow B's partial-work preservation kicked in but
+    # the cancellation surfaced as a separate failure mode worth raising the
+    # ceiling for. Larger milestones (M3 backend + M5 frontend + M6 integration)
+    # routinely run 11-21 min, so 60 gives comfortable headroom without runaway.
+    timeout-minutes: 60
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -62,15 +76,15 @@ jobs:
         with:
           prompt: ${{ inputs.prompt }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # 150 turns: M1 architecture fits in <10 turns; M2 ux_prototype +
-          # M3 backend_foundation routinely need 100-150 (~7 Django apps each
-          # needing models+migrations+serializers+viewsets+admin+tests = ~15
-          # turns/app). Bumped 30 → 60 → 100 → 150 across Evandos M2/M3 in
-          # 2026-04-25. continue-on-error + if: always() on the commit step
-          # below means partial work still pushes if Claude hits the budget,
-          # so admin can review what got done and continue rather than losing
-          # the whole run.
-          claude_args: --max-turns 150 --model claude-sonnet-4-6 --dangerously-skip-permissions
+          # claude_args is per-milestone-routed by admin
+          # (src/lib/milestone-routing.ts). Falls back to the prior global
+          # default below when admin omits the input — that keeps older
+          # admin deploys + manual re-dispatches working unchanged.
+          # Default rationale: 150 turns covers heaviest milestones (M2
+          # backend_foundation, M3 api_layer) ~7 Django apps × ~15 turns/app.
+          # continue-on-error + if: always() on the commit step below means
+          # partial work still pushes if Claude hits the budget.
+          claude_args: ${{ inputs.claude_args || '--max-turns 150 --model claude-sonnet-4-6 --dangerously-skip-permissions' }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           UWC_JOB_ID: ${{ inputs.job_id }}
