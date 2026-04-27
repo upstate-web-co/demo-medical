@@ -33,7 +33,9 @@ jobs:
       JOB_ID: ${{ inputs.job_id }}
       PROJECT_ID: ${{ inputs.project_id }}
     steps:
-      - uses: actions/setup-node@v4
+      # SHA-pinned per 2026-04-27 security audit. Resolve new SHA via:
+      #   gh api repos/actions/setup-node/commits/v4 --jq .sha
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # was @v4
         with:
           node-version: 20
 
@@ -233,12 +235,19 @@ jobs:
           JSEOF
 
       - name: Notify admin — running
+        # 2026-04-27 audit F3 Phase 2: send X-UWC-Ts + X-UWC-Nonce alongside
+        # the existing signature so admin can replay-reject. Sign over
+        # `${body}.${ts}.${nonce}`.
         run: |
           BODY=$(printf '{"job_id":"%s","status":"running"}' "$JOB_ID")
-          SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "${{ secrets.INTERACTION_WALKTHROUGH_WEBHOOK_SECRET }}" | awk '{print $2}')
+          TS=$(($(date +%s%N) / 1000000))
+          NONCE=$(openssl rand -hex 16)
+          SIG=$(printf '%s.%s.%s' "$BODY" "$TS" "$NONCE" | openssl dgst -sha256 -hmac "${{ secrets.INTERACTION_WALKTHROUGH_WEBHOOK_SECRET }}" | awk '{print $2}')
           curl -sS -X POST "$ADMIN_URL/api/webhooks/interactive-walkthrough" \
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: sha256=$SIG" \
+            -H "X-UWC-Ts: $TS" \
+            -H "X-UWC-Nonce: $NONCE" \
             -d "$BODY" || true
 
       - name: Run walkthrough
@@ -268,10 +277,19 @@ jobs:
           PYEOF
 
       - name: Notify admin — result
+        # body.json is potentially multi-MB (base64 screenshots). Avoid
+        # loading into a shell var; stream from file + append `.${ts}.${nonce}`
+        # via process substitution. Signature payload byte-exact matches
+        # what admin reconstructs as `${rawBody}.${ts}.${nonce}` since
+        # rawBody == body.json contents.
         if: always()
         run: |
-          SIG=$(openssl dgst -sha256 -hmac "${{ secrets.INTERACTION_WALKTHROUGH_WEBHOOK_SECRET }}" body.json | awk '{print $2}')
+          TS=$(($(date +%s%N) / 1000000))
+          NONCE=$(openssl rand -hex 16)
+          SIG=$( { cat body.json; printf '.%s.%s' "$TS" "$NONCE"; } | openssl dgst -sha256 -hmac "${{ secrets.INTERACTION_WALKTHROUGH_WEBHOOK_SECRET }}" | awk '{print $2}')
           curl -sS -X POST "$ADMIN_URL/api/webhooks/interactive-walkthrough" \
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: sha256=$SIG" \
+            -H "X-UWC-Ts: $TS" \
+            -H "X-UWC-Nonce: $NONCE" \
             --data-binary @body.json
