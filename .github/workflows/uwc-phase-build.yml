@@ -53,7 +53,11 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        # SHA-pinned per 2026-04-27 security audit (Trivy / tj-actions/changed-files
+        # CVE-2025-30066 root cause was a force-pushed mutable @v* tag). When
+        # bumping, resolve the new SHA via:
+        #   gh api repos/actions/checkout/commits/v4 --jq .sha
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # was @v4
         with:
           fetch-depth: 0
 
@@ -72,7 +76,11 @@ jobs:
       - name: Run Claude Code headless
         id: claude
         continue-on-error: true
-        uses: anthropics/claude-code-action@v1
+        # SHA-pinned per 2026-04-27 security audit. claude-code-action runs
+        # with ANTHROPIC_API_KEY + repo write access — a compromise of the
+        # @v1 tag would steer codegen across every UWC client repo. Resolve
+        # new SHA via: gh api repos/anthropics/claude-code-action/commits/v1
+        uses: anthropics/claude-code-action@567fe954a4527e81f132d87d1bdbcc94f7737434  # was @v1
         with:
           prompt: ${{ inputs.prompt }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
