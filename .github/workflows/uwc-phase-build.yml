@@ -152,3 +152,22 @@ jobs:
           echo "Claude Code step exited with: ${{ steps.claude.outcome }}"
           echo "Partial work pushed (if any) so admin can review or continue."
           exit 1
+
+      - name: Re-fail if Claude produced zero source changes (empty-PR detection — Track B3)
+        # Track B3 (2026-04-26): the Car Wash review-phase dispatch (run
+        # 24965984712) ran 57 turns + cost $2.06 and produced no source
+        # changes. Claude's outcome=success but commit step's
+        # `git status --porcelain` was empty → "Open PR" step skipped →
+        # workflow_run conclusion=success → admin's webhook saw zero signal.
+        # This step closes the silent-success-on-empty gap by failing the
+        # workflow when the commit step set no_changes=true.
+        # Combined with PR #79's workflow_run_id correlation (Rule 64), the
+        # webhook handler now flips phase_build_jobs.status='failed' with
+        # error='claude produced no source changes' instead of leaving the
+        # row at 'dispatched' indefinitely.
+        if: always() && steps.commit.outputs.no_changes == 'true'
+        run: |
+          echo "Claude exited successfully but produced zero file changes."
+          echo "Previously this surfaced as workflow_run conclusion=success — masking failure."
+          echo "Admin should redispatch with more context or investigate the prompt."
+          exit 1
