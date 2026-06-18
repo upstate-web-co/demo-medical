@@ -1,0 +1,192 @@
+---
+/**
+ * SEOHead — include on every page for proper meta tags and JSON-LD.
+ * Props override defaults from config.ts.
+ * Rule 78: Every client site must ship JSON-LD structured data.
+ */
+import { SITE } from '../lib/config'
+
+interface OpeningHoursDay {
+  dayOfWeek: string[]
+  opens: string
+  closes: string
+}
+
+interface Service {
+  name: string
+  description: string
+  areaServed?: string[]
+  offers?: { price: string; priceCurrency: string }
+}
+
+interface Product {
+  name: string
+  description: string
+  image: string
+  sku?: string
+  offers: { price: string; priceCurrency: string; availability: string }
+}
+
+interface FAQ {
+  question: string
+  answer: string
+}
+
+interface Props {
+  title?: string
+  description?: string
+  ogImage?: string
+  canonicalUrl?: string
+  schema?: Record<string, unknown>
+  services?: Service[]
+  products?: Product[]
+  faqs?: FAQ[]
+}
+
+const {
+  title = SITE.name,
+  description = SITE.tagline,
+  ogImage,
+  canonicalUrl,
+  schema,
+  services = [],
+  products = [],
+  faqs = [],
+} = Astro.props
+
+const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`
+const canonical = canonicalUrl || Astro.url.href
+const siteSearchUrl = SITE.url ? `${SITE.url}/search?q={search_term_string}` : undefined
+
+// --- Default LocalBusiness schema (rich, per Rule 78) ---
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${SITE.url}/#business`,
+  name: SITE.name,
+  description: SITE.tagline,
+  url: SITE.url,
+  email: SITE.email,
+  ...(SITE.phone ? { telephone: SITE.phone } : {}),
+  ...(SITE.postalAddress ? {
+    address: {
+      '@type': 'PostalAddress',
+      ...SITE.postalAddress,
+    }
+  } : {}),
+  ...(SITE.geo ? {
+    geo: {
+      '@type': 'GeoCoordinates',
+      ...SITE.geo,
+    }
+  } : {}),
+  ...(SITE.openingHours ? {
+    openingHoursSpecification: SITE.openingHours.map((oh: OpeningHoursDay) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: oh.dayOfWeek,
+      opens: oh.opens,
+      closes: oh.closes,
+    }))
+  } : {}),
+  ...(SITE.sameAs?.length ? { sameAs: SITE.sameAs } : {}),
+  ...(SITE.priceRange ? { priceRange: SITE.priceRange } : {}),
+  ...(SITE.paymentAccepted?.length ? { paymentAccepted: SITE.paymentAccepted.join(', ') } : {}),
+  ...(SITE.currenciesAccepted ? { currenciesAccepted: SITE.currenciesAccepted } : {}),
+}
+
+// --- WebSite schema ---
+const webSiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.name,
+  url: SITE.url,
+  ...(siteSearchUrl ? {
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: siteSearchUrl,
+      'query-input': 'required name=search_term_string',
+    }
+  } : {}),
+}
+
+// --- Schema array to render ---
+const schemas: Record<string, unknown>[] = [localBusinessSchema, webSiteSchema]
+
+// Service schemas
+if (services?.length) {
+  services.forEach((svc: Service) => {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: svc.name,
+      description: svc.description,
+      provider: { '@id': `${SITE.url}/#business` },
+      ...(svc.areaServed?.length ? { areaServed: svc.areaServed.map((a: string) => ({ '@type': 'City', name: a })) } : {}),
+      ...(svc.offers ? {
+        offers: {
+          '@type': 'Offer',
+          price: svc.offers.price,
+          priceCurrency: svc.offers.priceCurrency,
+        }
+      } : {}),
+    })
+  })
+}
+
+// Product schemas
+if (products?.length) {
+  products.forEach((prod: Product) => {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: prod.name,
+      description: prod.description,
+      image: prod.image,
+      ...(prod.sku ? { sku: prod.sku } : {}),
+      offers: {
+        '@type': 'Offer',
+        price: prod.offers.price,
+        priceCurrency: prod.offers.priceCurrency,
+        availability: prod.offers.availability,
+      },
+    })
+  })
+}
+
+// FAQPage schema
+if (faqs?.length) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq: FAQ) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  })
+}
+
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{!SITE.indexable && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE.name} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+
+<!-- JSON-LD Structured Data (Rule 78) -->
+{schemas.map((s) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(s)} />
+))}
