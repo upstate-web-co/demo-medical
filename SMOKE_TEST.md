@@ -1,0 +1,1 @@
+Headless dispatch smoke test passed at Thu Jun 25 14:14:33 UTC 2026. Model: claude-sonnet-4-6.
