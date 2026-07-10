@@ -1,0 +1,248 @@
+name: UWC Phase Build (Aider + DeepSeek)
+
+# Canonical copy lives in uwc-agency-admin/templates/client-repo-workflows/
+# Companion to uwc-phase-build.yml — same dispatch contract, different harness.
+#
+# This workflow uses Aider (https://aider.chat) with DeepSeek V4 as the headless
+# coding agent instead of anthropics/claude-code-action. It's dispatched by admin
+# when env LLM_CODEGEN_PROVIDER='aider' is set; otherwise admin dispatches
+# uwc-phase-build.yml.
+#
+# Authored 2026-05-13 per Phase A of the pure-DeepSeek migration. Closes the
+# "Rule 56 codegen pin" gap by giving the dispatcher a DeepSeek-compatible
+# substitute for claude-code-action.
+#
+# Copy this file to .github/workflows/uwc-aider-phase-build.yml in each client
+# repo. admin/headless-setup.ts pushes it automatically when
+# LLM_CODEGEN_PROVIDER='aider' is set.
+#
+# Required repo secrets:
+#   DEEPSEEK_API_KEY — DeepSeek API key (replaces ANTHROPIC_API_KEY for codegen)
+#
+# Required UWC admin env vars (same as the Anthropic workflow):
+#   GITHUB_APP_TOKEN     — PAT or App token with actions:write + pull-requests:write
+#   GITHUB_WEBHOOK_SECRET — HMAC secret configured on the repo's webhook → admin
+#
+# Webhook callback shape is IDENTICAL to uwc-phase-build.yml — same workflow_run
+# events, same head_branch convention (uwc-phase-{phase}-{job_id}), so admin's
+# existing github-pr webhook handler routes Aider runs the same way it routes
+# claude-code-action runs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        required: true
+        description: UWC project UUID
+      phase:
+        required: true
+        description: Phase slug (discovery|design|build|review|launch|maintenance) or m{n}_{name} for app milestones
+      prompt:
+        required: true
+        description: Pre-generated phase-build prompt (admin's phasePromptHeadless output)
+      job_id:
+        required: true
+        description: phase_build_jobs.id — echoed in PR body for webhook correlation
+      aider_args:
+        required: false
+        description: |
+          Optional. Per-milestone routing string passed to aider. Admin computes
+          via getMilestoneAiderArgs() in milestone-routing.ts. Uses openai/ prefix
+          to route through DeepSeek's OpenAI-compat endpoint (bypasses LiteLLM
+          registry). When empty, falls back to openai/deepseek-v4-flash.
+          Reasoning-heavy milestones (M1 architecture, M8 marketing_site)
+          receive openai/deepseek-v4-pro via the admin override.
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repo
+        # SHA-pinned per 2026-04-27 security audit (Rule 64 + Trivy CVE-2025-30066).
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # was @v4
+        with:
+          fetch-depth: 0
+
+      - name: Create feature branch
+        run: |
+          # Slug-safe phase: replace anything that's not [a-zA-Z0-9._-] with '-',
+          # collapse runs of '-'. Same convention as uwc-phase-build.yml so
+          # admin's webhook head_branch regex matches both workflows identically.
+          PHASE_SAFE="$(printf '%s' "${{ inputs.phase }}" | tr -c 'a-zA-Z0-9._-' '-' | tr -s '-' | sed 's/^-//; s/-$//')"
+          BRANCH="uwc-phase-${PHASE_SAFE}-${{ inputs.job_id }}"
+          git config user.name "uwc-aider[bot]"
+          git config user.email "uwc-aider@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+      - name: Set up Python (for Aider)
+        # SHA-pinned per Rule 64 security discipline.
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55  # was @v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Aider
+        run: |
+          # aider-chat is the canonical PyPI package; aider-install is a convenience
+          # shim that pulls in extras. Pin to a recent stable version explicitly so
+          # automated runs are reproducible.
+          python -m pip install --upgrade pip
+          pip install 'aider-chat>=0.84.0,<1.0'
+          aider --version
+
+      - name: Write prompt to file (aider --message-file expects a path)
+        run: |
+          # Use a here-doc to avoid shell-escape issues on prompts that contain
+          # special characters. Same input.prompt shape as uwc-phase-build.yml.
+          cat > /tmp/uwc-phase-prompt.md <<'UWC_PROMPT_EOF'
+          ${{ inputs.prompt }}
+          UWC_PROMPT_EOF
+          wc -l /tmp/uwc-phase-prompt.md
+
+      - name: Run Aider headless against DeepSeek
+        id: aider
+        continue-on-error: true
+        env:
+          # Route DeepSeek through the openai/ provider prefix so we can use
+          # canonical model names (deepseek-v4-flash / deepseek-v4-pro) instead
+          # of the legacy aliases (deepseek-chat / deepseek-reasoner) which
+          # deprecate 2026-07-24. LiteLLM's model registry doesn't have v4 models
+          # registered under the deepseek/ provider, but the OpenAI-compat endpoint
+          # at api.deepseek.com/v1 accepts them.
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_API_BASE: https://api.deepseek.com/v1
+          UWC_JOB_ID: ${{ inputs.job_id }}
+          UWC_PROJECT_ID: ${{ inputs.project_id }}
+          UWC_PHASE: ${{ inputs.phase }}
+        run: |
+          # Default aider_args mirrors claude-code-action's max-turns budget +
+          # auto-commit behavior. --yes auto-confirms file edits (similar to
+          # --dangerously-skip-permissions on claude-code-action). --auto-commits
+          # makes aider commit each edit; we skip that and commit ourselves at
+          # the end so partial-work preservation matches the claude workflow.
+          AIDER_ARGS="${{ inputs.aider_args }}"
+          if [ -z "$AIDER_ARGS" ]; then
+            # --edit-format whole works for both new-file creation AND existing-file
+            # rewrites. Default diff format silently no-ops on "create a new file"
+            # prompts when the target file isn't in Aider's context — proved in the
+            # 2026-05-13 P&T smoke test. whole is safer for autonomous phase builds
+            # where the prompt may ask for new files outside the repo-map.
+            #
+            # --no-gitignore suppresses Aider's automatic .aider* addition to .gitignore
+            # (we strip those files from the commit below instead, so the PR diff only
+            # contains real phase work, never Aider's cache).
+            # Use openai/ prefix to bypass LiteLLM's model registry (which doesn't
+            # include deepseek-v4-* models as of 2026-07-10). OPENAI_API_BASE
+            # points at DeepSeek's OpenAI-compat endpoint so the openai/ provider
+            # routes there. deepseek-v4-flash is the canonical name for the
+            # no-reasoning variant (legacy deepseek-chat alias deprecates
+            # 2026-07-24). Admin's getMilestoneAiderArgs() overrides with
+            # openai/deepseek-v4-pro for reasoning-heavy milestones (M1, M8).
+            AIDER_ARGS="--model openai/deepseek-v4-flash --edit-format whole --yes --no-auto-commits --no-gitignore"
+          fi
+          echo "Running: aider $AIDER_ARGS --message-file /tmp/uwc-phase-prompt.md"
+          # Discover all files in the repo and pass them to aider so it has full
+          # context. --subtree-only restricts aider to the working dir (no parent
+          # repo access). 50MB cap on context per aider's defaults.
+          aider $AIDER_ARGS \
+            --message-file /tmp/uwc-phase-prompt.md \
+            --no-show-model-warnings \
+            --no-pretty \
+            --map-tokens 8192
+
+      - name: Commit + push branch (preserves partial work even on Aider failure)
+        if: always()
+        id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AIDER_OUTCOME: ${{ steps.aider.outcome }}
+        run: |
+          # Aider may have made commits itself if --auto-commits was on. We
+          # forced --no-auto-commits above so the working tree carries any
+          # changes uncommitted, and we commit them here in one batch.
+          if [[ -z "$(git status --porcelain)" ]] && [[ "$(git log --oneline origin/${{ github.event.repository.default_branch }}..HEAD | wc -l)" == "0" ]]; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+            echo "Aider produced no file changes — skipping PR"
+            exit 0
+          fi
+          # Re-auth origin remote (defensive — aider doesn't manipulate creds
+          # but matches the claude workflow's pattern).
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            # Strip Aider's own cache files from the commit. Even with
+            # --no-gitignore, Aider writes .aider.chat.history.md and
+            # .aider.tags.cache.v*/ into the working dir during a run. Those
+            # are session artifacts, not phase output — never include them
+            # in the PR diff.
+            git add -A
+            git reset HEAD -- '.aider*' '.aider.tags.cache.v*' 2>/dev/null || true
+            git checkout -- '.aider*' '.aider.tags.cache.v*' 2>/dev/null || true
+            rm -rf .aider.chat.history.md .aider.input.history .aider.tags.cache.v* 2>/dev/null || true
+            # Re-stage in case the rm produced new working-tree changes
+            git add -A
+            if [[ -z "$(git status --porcelain)" ]] && [[ "$(git log --oneline origin/${{ github.event.repository.default_branch }}..HEAD | wc -l)" == "0" ]]; then
+              echo "no_changes=true" >> $GITHUB_OUTPUT
+              echo "Aider's only changes were its own cache files — skipping PR"
+              exit 0
+            fi
+            if [[ "$AIDER_OUTCOME" != "success" ]]; then
+              COMMIT_MSG="UWC phase build via Aider+DeepSeek (PARTIAL — aider $AIDER_OUTCOME) — ${{ inputs.phase }} (job ${{ inputs.job_id }})"
+            else
+              COMMIT_MSG="UWC phase build via Aider+DeepSeek — ${{ inputs.phase }} (job ${{ inputs.job_id }})"
+            fi
+            git commit -m "$COMMIT_MSG"
+          fi
+          git push origin "$BRANCH"
+          echo "aider_outcome=$AIDER_OUTCOME" >> $GITHUB_OUTPUT
+
+      - name: Open pull request
+        if: always() && steps.commit.outputs.no_changes != 'true' && steps.commit.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AIDER_OUTCOME: ${{ steps.aider.outcome }}
+        run: |
+          if [[ "$AIDER_OUTCOME" != "success" ]]; then
+            TITLE="UWC phase build (PARTIAL via Aider+DeepSeek) — ${{ inputs.phase }}"
+            EXTRA_BODY="
+
+          ⚠️ **Aider exited with status: $AIDER_OUTCOME** (likely rate-limit or context overflow). This PR captures the partial work that was committed. Admin should review and either merge as-is, redispatch to continue, or close + retry."
+          else
+            TITLE="UWC phase build via Aider+DeepSeek — ${{ inputs.phase }}"
+            EXTRA_BODY=""
+          fi
+          gh pr create \
+            --title "$TITLE" \
+            --body "Auto-generated by UWC admin (Aider+DeepSeek codegen path).
+
+          UWC phase build job: ${{ inputs.job_id }}
+          Project: ${{ inputs.project_id }}
+          Phase: ${{ inputs.phase }}
+          Harness: aider-chat (DeepSeek V4)
+
+          Review the diff, merge to advance the pipeline.$EXTRA_BODY" \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH"
+
+      - name: Re-fail if Aider failed (surface workflow_run conclusion=failure to admin)
+        if: always() && steps.aider.outcome != 'success'
+        run: |
+          echo "Aider step exited with: ${{ steps.aider.outcome }}"
+          echo "Partial work pushed (if any) so admin can review or continue."
+          exit 1
+
+      - name: Re-fail if Aider produced zero source changes (empty-PR detection)
+        # Mirror of uwc-phase-build.yml Track B3 (2026-04-26). Aider returning
+        # success but emitting zero edits is the same silent-failure mode.
+        # Webhook flips phase_build_jobs.status='failed' with appropriate error.
+        if: always() && steps.commit.outputs.no_changes == 'true'
+        run: |
+          echo "Aider exited successfully but produced zero file changes."
+          echo "Admin should redispatch with more context or investigate the prompt."
+          exit 1
