@@ -66,20 +66,8 @@ const localBusinessSchema = {
   name: SITE.name,
   description: SITE.tagline,
   url: SITE.url,
-  email: SITE.email,
+  ...(SITE.email ? { email: SITE.email } : {}),
   ...(SITE.phone ? { telephone: SITE.phone } : {}),
-  ...(SITE.postalAddress ? {
-    address: {
-      '@type': 'PostalAddress',
-      ...SITE.postalAddress,
-    }
-  } : {}),
-  ...(SITE.geo ? {
-    geo: {
-      '@type': 'GeoCoordinates',
-      ...SITE.geo,
-    }
-  } : {}),
   ...(SITE.openingHours ? {
     openingHoursSpecification: SITE.openingHours.map((oh: OpeningHoursDay) => ({
       '@type': 'OpeningHoursSpecification',

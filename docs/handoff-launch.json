@@ -1,0 +1,28 @@
+{
+  "phase": "launch",
+  "launchMode": "demo",
+  "project": "UWC Phase Build Smoke Test",
+  "client": "UWC Smoketest",
+  "tier": "business",
+  "date": "2026-04-25",
+  "live_url": "https://demo.medical.upstate-web.com",
+  "flags": {
+    "indexable": false,
+    "isDemo": true,
+    "hasDisclaimer": true
+  },
+  "real_client_promotion_delta": {
+    "steps_required_before_real_launch": [
+      "Flip indexable=true, isDemo=false, hasDisclaimer=false in src/lib/config.ts",
+      "Replace public/robots.txt with Allow + Sitemap version",
+      "Replace all fictional testimonials with real client-approved content",
+      "Fill SITE.email, SITE.phone, SITE.sameAs with real client data",
+      "Run Google Rich Results Test on live URL to validate structured data",
+      "Resolve workflow health score issue (was 4/100 in review cycles) before real-client deploy"
+    ]
+  },
+  "left_open": [
+    "Workflow health score root cause (4/100) — admin must investigate before real-client use of this repo",
+    "CI workflow setup is admin-managed — not modified here per dispatch constraints"
+  ]
+}
