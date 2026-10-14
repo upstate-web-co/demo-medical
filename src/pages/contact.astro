@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import { SITE, HOURS } from '../lib/config'
 
 const title = `Contact ${SITE.name} — Get in Touch`
-const description = `Reach ${SITE.name} in Greenville, SC. Send us a message, call, or stop by during office hours. New patients always welcome.`
+const description = `Reach ${SITE.name}. Send us a message, call, or stop by during office hours. New patients always welcome.`
 
 const contactPageJsonLd = {
   '@context': 'https://schema.org',
@@ -13,16 +13,8 @@ const contactPageJsonLd = {
   mainEntity: {
     '@type': 'Organization',
     name: SITE.name,
-    email: SITE.email,
-    telephone: SITE.phone,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '123 Riverside Way, Suite 200',
-      addressLocality: 'Greenville',
-      addressRegion: 'SC',
-      postalCode: '29601',
-      addressCountry: 'US',
-    },
+    ...(SITE.email ? { email: SITE.email } : {}),
+    ...(SITE.phone ? { telephone: SITE.phone } : {}),
   },
 }
 ---

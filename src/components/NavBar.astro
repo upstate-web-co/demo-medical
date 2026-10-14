@@ -21,7 +21,7 @@ const links = [
       aria-label={`${SITE.name} home`}
     >
       <span aria-hidden="true" class="text-2xl">🦷</span>
-      <span class="text-lg font-semibold"><span class="text-blue">Bramblewood</span> Dental</span>
+      <span class="text-lg font-semibold">{SITE.name}</span>
     </a>
     <ul class="hidden md:flex items-center gap-6 text-sm" role="list">
       {links.map((l) => (
@@ -40,7 +40,7 @@ const links = [
       ))}
       <li>
         <a
-          href={SITE.bookingUrl}
+          href="/contact"
           class="rounded-lg bg-blue px-5 py-2 font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
         >
           Book Online
@@ -85,7 +85,7 @@ const links = [
     </a>
   ))}
   <a
-    href={SITE.bookingUrl}
+    href="/contact"
     class="mt-2 rounded-lg bg-blue px-6 py-3 text-lg font-medium text-white hover:bg-blue-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
   >
     Book Online

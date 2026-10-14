@@ -51,7 +51,7 @@ const resolvedOgImage = ogImage ?? 'https://images.unsplash.com/photo-1629909613
 
   <div class="bg-yellow-50 border-y border-yellow-200 py-3 px-6 text-center">
     <p class="text-xs text-yellow-800">
-      <strong>Portfolio Demo</strong> — This is a fictional business created by <a href="https://upstate-web.com" class="underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 hover:text-yellow-900">Upstate Web Co</a>. All names, addresses, credentials, and details are entirely fictional. Not a real dental practice.
+      <strong>Portfolio Demo</strong> — This is a fictional business created by <a href="https://demo.medical.upstate-web.com" class="underline rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 hover:text-yellow-900">UWC Smoketest</a>. All names, addresses, credentials, and details are entirely fictional. Not a real dental practice.
     </p>
   </div>
 
@@ -59,7 +59,7 @@ const resolvedOgImage = ogImage ?? 'https://images.unsplash.com/photo-1629909613
     <div class="mx-auto max-w-6xl px-6 py-10">
       <div class="grid md:grid-cols-4 gap-8">
         <div>
-          <p class="text-lg font-semibold text-white"><span aria-hidden="true">🦷</span> Bramblewood Dental</p>
+          <p class="text-lg font-semibold text-white"><span aria-hidden="true">🦷</span> {SITE.name}</p>
           <p class="text-sm mt-2">{SITE.tagline}</p>
         </div>
         <div class="text-sm">
@@ -78,11 +78,11 @@ const resolvedOgImage = ogImage ?? 'https://images.unsplash.com/photo-1629909613
           <p class="font-medium text-white mb-2">Quick Links</p>
           <p><a href="/about" class="rounded hover:text-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">About</a></p>
           <p><a href="/contact" class="rounded hover:text-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Contact</a></p>
-          <p><a href={SITE.bookingUrl} class="rounded hover:text-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Book Appointment</a></p>
+          <p><a href="/contact" class="rounded hover:text-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Book Appointment</a></p>
         </div>
       </div>
       <div class="mt-8 pt-6 border-t border-white/10 text-center text-xs">
-        &copy; {new Date().getFullYear()} {SITE.name}. Built by <a href="https://upstate-web.com" class="text-blue rounded hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Upstate Web Co</a>
+        &copy; {new Date().getFullYear()} {SITE.name}. Built by <a href="https://demo.medical.upstate-web.com" class="text-blue rounded hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">UWC Smoketest</a>
       </div>
     </div>
   </footer>

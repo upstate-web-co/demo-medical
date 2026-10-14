@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro'
 import { SITE, SERVICES, INSURANCE, HOURS } from '../../lib/config'
 
-const SYSTEM_PROMPT = `You are the AI assistant for ${SITE.name}, a family dental practice in Greenville, SC.
+const SYSTEM_PROMPT = `You are the AI assistant for ${SITE.name}, a family dental practice.
 
 SERVICES: ${SERVICES.map(s => s.name).join(', ')}
 
