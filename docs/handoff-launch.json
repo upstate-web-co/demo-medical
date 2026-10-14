@@ -1,0 +1,27 @@
+{
+  "phase": "launch",
+  "launchMode": "demo",
+  "project": "UWC Phase Build Smoke Test",
+  "client": "UWC Smoketest",
+  "repo": "upstate-web-co/demo-medical",
+  "date": "2026-07-28",
+  "url": "https://demo.medical.upstate-web.com",
+  "flags": {
+    "indexable": false,
+    "isDemo": true,
+    "hasDisclaimer": true
+  },
+  "structured_data_status": "demo — email/phone empty strings, no placeholder leakage",
+  "legal_audit": "testimonials marked fictional, robots.txt blocks all crawlers",
+  "real_client_promotion_delta": {
+    "steps_to_promote": [
+      "Flip indexable=true, isDemo=false, hasDisclaimer=false in src/lib/config.ts",
+      "Replace public/robots.txt with Allow: / + Sitemap line",
+      "Replace fictional testimonials in src/data/testimonials.json with real client testimonials",
+      "Fill SITE.email, SITE.phone, SITE.address, SITE.geo, SITE.sameAs, SITE.openingHours with real client data",
+      "Run Google Rich Results Test on live URL after promoting",
+      "Re-run npm run build and npm run review — confirm both exit 0"
+    ]
+  },
+  "left_open": []
+}

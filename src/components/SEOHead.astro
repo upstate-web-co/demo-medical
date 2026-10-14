@@ -68,13 +68,7 @@ const localBusinessSchema = {
   url: SITE.url,
   email: SITE.email,
   ...(SITE.phone ? { telephone: SITE.phone } : {}),
-  ...(SITE.postalAddress ? {
-    address: {
-      '@type': 'PostalAddress',
-      ...SITE.postalAddress,
-    }
-  } : {}),
-  ...(SITE.geo ? {
+  ...(SITE.geo?.latitude ? {
     geo: {
       '@type': 'GeoCoordinates',
       ...SITE.geo,
